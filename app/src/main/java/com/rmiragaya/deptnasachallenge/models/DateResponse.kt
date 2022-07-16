@@ -7,5 +7,5 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 @Keep
 data class DateResponse(
-val listOfDates : ArrayList<DateResponseItem?>
+val listOfDates : ArrayList<DateResponseItem>
 ): Parcelable

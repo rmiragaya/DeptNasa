@@ -7,7 +7,7 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 @Keep
 data class DateResponseItem(
-    val date: String?,
-    val datePhotos: DateResponse?,
-    var downloadState: DownloadState?
+    var date: String = "",
+    var datePhotos: ArrayList<DatePhotosItem>? = null,
+    var downloadState: DownloadState? = null
 ) : Parcelable

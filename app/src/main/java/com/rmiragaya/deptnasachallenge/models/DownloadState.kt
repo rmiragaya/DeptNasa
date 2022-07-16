@@ -3,5 +3,6 @@ package com.rmiragaya.deptnasachallenge.models
 enum class DownloadState {
     IDLE,
     LOADING,
-    SUCCES
+    SUCCES,
+    ERROR
 }

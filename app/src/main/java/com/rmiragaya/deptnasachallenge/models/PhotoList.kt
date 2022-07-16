@@ -6,9 +6,6 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 @Keep
-data class DatePhotosItem(
-    val caption: String?,
-    val date: String?,
-    val identifier: String?,
-    val image: String?
+data class PhotoList(
+    val photoList : ArrayList<DatePhotosItem>? = arrayListOf()
 ): Parcelable

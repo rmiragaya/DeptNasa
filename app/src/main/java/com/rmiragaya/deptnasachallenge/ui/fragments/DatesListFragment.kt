@@ -1,7 +1,6 @@
 package com.rmiragaya.deptnasachallenge.ui.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,34 +10,36 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.rmiragaya.deptnasachallenge.R
 import com.rmiragaya.deptnasachallenge.databinding.DatesListFragmentBinding
-import com.rmiragaya.deptnasachallenge.models.DateResponse
+import com.rmiragaya.deptnasachallenge.models.DateResponseItem
+import com.rmiragaya.deptnasachallenge.models.DownloadState.SUCCES
+import com.rmiragaya.deptnasachallenge.models.PhotoList
 import com.rmiragaya.deptnasachallenge.ui.activity.MainActivity
 import com.rmiragaya.deptnasachallenge.ui.viewmodel.MainViewmodel
 import com.rmiragaya.deptnasachallenge.utils.Constants.Companion.OBJECT_KEY
 import com.rmiragaya.deptnasachallenge.utils.Resource
 
-class DateListFragment : Fragment() {
+class DatesListFragment : Fragment() {
 
     private var _binding: DatesListFragmentBinding? = null
     private val binding get() = _binding!!
 
     lateinit var listViewmodel: MainViewmodel
-    private val listDatesAdapter by lazy {
-        ListDatesAdapter(onClick = { date -> navigateToDatePhotos(date) })
+    private val datesListAdapter by lazy {
+        DatesListAdapter(
+            onClick = { date -> navigateToDatePhotos(date) },
+            onScreen = { date -> listViewmodel.getDatePhotos(date) }
+        )
     }
 
-    private fun navigateToDatePhotos(date: DateResponse?) {
-        date?.let {
-            if (date.listOfDates.isEmpty()) {
-                // todo not data yet
-                Log.d("Detail", "not data yet")
+    private fun navigateToDatePhotos(date: PhotoList) {
+        date.photoList?.let {
+            if (it.isEmpty()) {
+                showSnackBar(getString(R.string.not_yet))
             } else {
-                Log.d("Detail", "navegar a la siguiente pantalla")
                 openPhotosFragment(date)
             }
         } ?: run {
-        // todo not data yet
-            Log.d("Detail", "not data yet")
+            showSnackBar(getString(R.string.not_yet))
         }
     }
 
@@ -68,8 +69,7 @@ class DateListFragment : Fragment() {
                 is Resource.Success -> {
                     progressBar(false)
                     response.data?.let { listResponse ->
-                        listDatesAdapter.differ.submitList(listResponse)
-                        listDatesAdapter.differ.
+                        datesListAdapter.setData(listResponse)
                     }
                 }
                 is Resource.Error -> {
@@ -79,6 +79,24 @@ class DateListFragment : Fragment() {
                 is Resource.Loading -> {
                     progressBar(true)
                 }
+            }
+            getDatesPhotos()
+
+        }
+
+        listViewmodel.dateLoading.observe(viewLifecycleOwner) {
+            it?.let { dateLoading ->
+                updateDateList(dateLoading)
+            }
+        }
+    }
+
+    private fun getDatesPhotos() {
+        val fullList = listViewmodel.dateListResponse.value?.data
+        val date = fullList?.firstOrNull { it.downloadState == null }?.date
+        date?.let {
+            if (listViewmodel.dateListResponse.value?.data?.find { date == it.date }?.downloadState == null) {
+                listViewmodel.getDatePhotos(date)
             }
         }
     }
@@ -97,18 +115,18 @@ class DateListFragment : Fragment() {
         this.view?.let { it ->
             val message =
                 if (!responseMessage.isNullOrEmpty()) responseMessage else getString(R.string.generic_error)
-            Snackbar.make(it, message, Snackbar.LENGTH_INDEFINITE).show()
+            Snackbar.make(it, message, Snackbar.LENGTH_SHORT).show()
         }
     }
 
     private fun setUpRecyclerView() {
         binding.listFragmentRv.apply {
-            adapter = listDatesAdapter
+            adapter = datesListAdapter
             layoutManager = LinearLayoutManager(activity)
         }
     }
 
-    private fun openPhotosFragment(item: DateResponse) {
+    private fun openPhotosFragment(item: PhotoList) {
         val bundle = Bundle().apply {
             putParcelable(OBJECT_KEY, item)
         }
@@ -118,6 +136,25 @@ class DateListFragment : Fragment() {
         )
     }
 
+    private fun updateDateList(dateLoading: DateResponseItem) {
+        val listaCompleta = listViewmodel.dateListResponse.value?.data
+        listaCompleta?.let {
 
+            val index = listaCompleta.withIndex().find { dateLoading.date == it.value.date }?.index
+
+            index?.let {
+                listaCompleta[index].apply {
+                    downloadState = dateLoading.downloadState
+                    datePhotos = dateLoading.datePhotos
+                }
+                datesListAdapter.setData(listaCompleta, index)
+
+//                if (dateLoading.downloadState == SUCCES) {
+////                    getDatesPhotos(datesListAdapter.getNextDate(it))
+//                    getDatesPhotos()
+//                }
+            }
+        }
+    }
 }
 

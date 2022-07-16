@@ -4,29 +4,37 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rmiragaya.deptnasachallenge.models.DateResponse
+import com.rmiragaya.deptnasachallenge.models.DatePhotosItem
 import com.rmiragaya.deptnasachallenge.models.DateResponseItem
+import com.rmiragaya.deptnasachallenge.models.DownloadState
 import com.rmiragaya.deptnasachallenge.repo.NasaRepo
 import com.rmiragaya.deptnasachallenge.utils.Resource
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import retrofit2.Response
 
 class MainViewmodel(
-    val repo : NasaRepo
-    ) : ViewModel() {
+    val repo: NasaRepo
+) : ViewModel() {
 
-    private val _dateListResponse = MutableLiveData<Resource<ArrayList<DateResponseItem?>>>()
-    val dateListResponse: LiveData<Resource<ArrayList<DateResponseItem?>>>
+    private val _dateListResponse = MutableLiveData<Resource<MutableList<DateResponseItem>>>()
+    val dateListResponse: LiveData<Resource<MutableList<DateResponseItem>>>
         get() = _dateListResponse
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler { r, w ->
         _dateListResponse.postValue(Resource.Error(w.message))
     }
 
+    private val _dateLoading = MutableLiveData<DateResponseItem>()
+    val dateLoading: LiveData<DateResponseItem>
+        get() = _dateLoading
+
+    private var getDatePhotosJob: Job? = null
+
     init {
-        getDateList()
+        if (_dateListResponse.value?.data == null) getDateList()
     }
 
     private fun getDateList() = viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
@@ -36,10 +44,10 @@ class MainViewmodel(
         _dateListResponse.postValue(handleListReponse(response))
     }
 
-    private fun handleListReponse(response: Response<ArrayList<DateResponseItem?>>): Resource<ArrayList<DateResponseItem?>> {
+    private fun handleListReponse(response: Response<MutableList<DateResponseItem>>): Resource<MutableList<DateResponseItem>> {
         if (response.isSuccessful) {
             response.body()?.let { resultResponse ->
-                if (resultResponse.isNotEmpty()){
+                if (resultResponse.isNotEmpty()) {
                     return Resource.Success(resultResponse)
                 } else {
                     return Resource.Error(response.message())
@@ -49,23 +57,39 @@ class MainViewmodel(
         return Resource.Error(response.message())
     }
 
-    fun getDatePhotos() = viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-        
+    fun getDatePhotos(date: String){
+
+        if (getDatePhotosJob?.isActive == true) {
+            return
+        }
+
+        getDatePhotosJob = viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
+            _dateLoading.postValue(
+                DateResponseItem(
+                    date = date,
+                    downloadState = DownloadState.LOADING
+                )
+            )
+            val response = repo.getPhotosOfTheDate(date)
+            _dateLoading.postValue(handlePhotoListResponse(date, response))
+        }
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+    private fun handlePhotoListResponse(
+        date: String,
+        response: Response<ArrayList<DatePhotosItem>>
+    ): DateResponseItem {
+        if (response.isSuccessful) {
+            response.body()?.let { resultResponse ->
+                if (resultResponse.isNotEmpty()) {
+                    return DateResponseItem(date, response.body(), DownloadState.SUCCES)
+                } else {
+                    return DateResponseItem(date, downloadState = DownloadState.ERROR)
+                }
+            }
+        }
+        return DateResponseItem(date, downloadState = DownloadState.ERROR)
+    }
 
 }

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">DeptNasaChallenge</string>
     <string name="generic_error">Ups</string>
+    <string name="not_yet">Aun no esta listo</string>
     <string name="dept_challenge">Dept Challenge</string>
     <string name="no_conection">No tienes conexión</string>
     <string name="retry">Reintentar</string>
