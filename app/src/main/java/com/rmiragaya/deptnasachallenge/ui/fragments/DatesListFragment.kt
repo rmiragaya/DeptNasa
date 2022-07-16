@@ -27,7 +27,7 @@ class DatesListFragment : Fragment() {
     private val datesListAdapter by lazy {
         DatesListAdapter(
             onClick = { date -> navigateToDatePhotos(date) },
-            onScreen = { date -> listViewmodel.getDatePhotos(date) }
+            onScreen = { date -> getDatePhotos(date) }
         )
     }
 
@@ -80,8 +80,6 @@ class DatesListFragment : Fragment() {
                     progressBar(true)
                 }
             }
-            getDatesPhotos()
-
         }
 
         listViewmodel.dateLoading.observe(viewLifecycleOwner) {
@@ -89,6 +87,11 @@ class DatesListFragment : Fragment() {
                 updateDateList(dateLoading)
             }
         }
+    }
+
+    private fun getDatePhotos(date : String) {
+        val fullList = listViewmodel.dateListResponse.value?.data
+        if (fullList?.find { it.date == date }?.downloadState == null) listViewmodel.getDatePhotos(date)
     }
 
     private fun getDatesPhotos() {
@@ -148,11 +151,6 @@ class DatesListFragment : Fragment() {
                     datePhotos = dateLoading.datePhotos
                 }
                 datesListAdapter.setData(listaCompleta, index)
-
-//                if (dateLoading.downloadState == SUCCES) {
-////                    getDatesPhotos(datesListAdapter.getNextDate(it))
-//                    getDatesPhotos()
-//                }
             }
         }
     }

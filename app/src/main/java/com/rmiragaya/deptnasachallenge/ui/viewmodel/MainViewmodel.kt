@@ -31,7 +31,7 @@ class MainViewmodel(
     val dateLoading: LiveData<DateResponseItem>
         get() = _dateLoading
 
-    private var getDatePhotosJob: Job? = null
+//    private var getDatePhotosJob: Job? = null
 
     init {
         if (_dateListResponse.value?.data == null) getDateList()
@@ -57,13 +57,13 @@ class MainViewmodel(
         return Resource.Error(response.message())
     }
 
-    fun getDatePhotos(date: String){
+    fun getDatePhotos(date: String)
 
-        if (getDatePhotosJob?.isActive == true) {
-            return
-        }
-
-        getDatePhotosJob = viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
+//        if (getDatePhotosJob?.isActive == true) {
+//            return
+//        }
+//        getDatePhotosJob
+        = viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             _dateLoading.postValue(
                 DateResponseItem(
                     date = date,
@@ -73,7 +73,7 @@ class MainViewmodel(
             val response = repo.getPhotosOfTheDate(date)
             _dateLoading.postValue(handlePhotoListResponse(date, response))
         }
-    }
+
 
 
     private fun handlePhotoListResponse(

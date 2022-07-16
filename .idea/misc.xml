@@ -3,9 +3,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Ropa/AndroidStudioProjects/DeptNasaChallenge/app/src/main/res/drawable-v24/ic_placeholder.xml" value="0.2455" />
         <entry key="..\:/Users/Ropa/AndroidStudioProjects/DeptNasaChallenge/app/src/main/res/layout/activity_main.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/Ropa/AndroidStudioProjects/DeptNasaChallenge/app/src/main/res/layout/date_list_adapter.xml" value="0.33" />
         <entry key="..\:/Users/Ropa/AndroidStudioProjects/DeptNasaChallenge/app/src/main/res/layout/dates_list_fragment.xml" value="0.36" />
+        <entry key="..\:/Users/Ropa/AndroidStudioProjects/DeptNasaChallenge/app/src/main/res/layout/grid_photo_adapter.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/Ropa/AndroidStudioProjects/DeptNasaChallenge/app/src/main/res/layout/photos_fragment.xml" value="0.27421875" />
       </map>
     </option>
