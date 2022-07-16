@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/dateListFragment">
+
+    <fragment
+        android:id="@+id/dateListFragment"
+        android:name="com.rmiragaya.deptnasachallenge.ui.fragments.DateListFragment"
+        android:label="DateListFragment" >
+        <action
+            android:id="@+id/action_dateListFragment_to_photosFragment"
+            app:destination="@id/photosFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+    <fragment
+        android:id="@+id/photosFragment"
+        android:name="com.rmiragaya.deptnasachallenge.ui.fragments.PhotosFragment"
+        android:label="PhotosFragment">
+        <argument
+            android:name="objectKey"
+            app:argType="com.rmiragaya.deptnasachallenge.models.DateResponse" />
+    </fragment>
+</navigation>
