@@ -35,6 +35,8 @@ class MainViewmodel(
     val dateLoading: LiveData<DateResponseItem>
         get() = _dateLoading
 
+    var indexLoaded = 0
+
     init {
         if (_dateListResponse.value?.data == null) getDateList()
     }

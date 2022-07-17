@@ -1,7 +1,6 @@
 package com.rmiragaya.deptnasachallenge.ui.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,7 +24,7 @@ class DatesListFragment : Fragment() {
     private val binding get() = _binding!!
 
     lateinit var listViewmodel: MainViewmodel
-    private val datesListAdapter by lazy { DatesListAdapter { date -> navigateToDatePhotos(date) }}
+    private val datesListAdapter by lazy { DatesListAdapter { date -> navigateToDatePhotos(date) } }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,7 +51,9 @@ class DatesListFragment : Fragment() {
                     progressBar(false)
                     response.data?.let { listResponse ->
                         datesListAdapter.setData(listResponse)
-                        getDatesPhotos(0)
+                        if (listViewmodel.indexLoaded == 0) {
+                            getDatesPhotos(listViewmodel.indexLoaded)
+                        }
                     }
                 }
                 is Resource.Error -> {
@@ -68,15 +69,16 @@ class DatesListFragment : Fragment() {
         listViewmodel.dateLoading.observe(viewLifecycleOwner) {
             it?.date?.let { date ->
                 updateDateList(it)
-                if (it.downloadState == DownloadState.SUCCES) {
+                if (it.downloadState == DownloadState.SUCCES || it.downloadState == DownloadState.ERROR) {
                     /** make the next call */
-                    getDatesPhotos(datesListAdapter.getNextDate(date))
+                    getDatesPhotos(listViewmodel.indexLoaded)
                 }
             }
         }
     }
 
     private fun getDatesPhotos(indexDate: Int?) {
+        listViewmodel.indexLoaded++
         indexDate?.let {
             val fullList = listViewmodel.dateListResponse.value?.data
             val dateToSearch = fullList?.get(it)
