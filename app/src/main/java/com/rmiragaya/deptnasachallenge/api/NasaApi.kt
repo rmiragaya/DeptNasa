@@ -12,7 +12,6 @@ interface NasaApi {
     suspend fun getAvailableDates(
     ): Response<MutableList<DateResponseItem>>
 
-
     @GET("api/enhanced/date/{date}")
     suspend fun getPhotosOfDate(
         @Path("date") date: String

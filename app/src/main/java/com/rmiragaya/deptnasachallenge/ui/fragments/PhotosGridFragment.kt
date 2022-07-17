@@ -50,7 +50,6 @@ class PhotosGridFragment : Fragment() {
         }
     }
 
-
     private fun bindViews() {
         photoList = args.photoList
         photoList.let {photoGridAdapter.differ.submitList(it?.photoList) }

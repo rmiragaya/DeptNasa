@@ -11,10 +11,9 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.rmiragaya.deptnasachallenge.R
 import com.rmiragaya.deptnasachallenge.databinding.GridPhotoAdapterBinding
 import com.rmiragaya.deptnasachallenge.models.DatePhotosItem
+import com.rmiragaya.deptnasachallenge.utils.Constants
 
 class PhotoGridAdapter (val onClick : (DatePhotosItem) -> Unit) :  RecyclerView.Adapter<PhotoGridAdapter.PhotoViewHolder>()  {
-
-
 
     override fun getItemCount(): Int {
         return differ.currentList.size
@@ -46,18 +45,14 @@ class PhotoGridAdapter (val onClick : (DatePhotosItem) -> Unit) :  RecyclerView.
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(photo: DatePhotosItem) {
-
-            val dateFormat = photo.date?.replace("-", "/")
-
             binding.run {
                 Glide.with(this.root)
-                    .load("https://epic.gsfc.nasa.gov/archive/enhanced/${dateFormat?.split(" ")?.first()}/png/${photo.image}.png")
+                    .load("${Constants.IMAGE_URL}${photo.getOnlyDate()}/png/${photo.image}.png")
                     .thumbnail(0.25f)
                     .transform(CenterCrop(), RoundedCorners(25))
                     .placeholder(R.drawable.ic_placeholder)
                     .into(binding.photo)
             }
-
             setPhoto(photo)
         }
 

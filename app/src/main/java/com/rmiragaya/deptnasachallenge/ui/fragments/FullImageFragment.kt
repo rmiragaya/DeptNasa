@@ -1,7 +1,6 @@
 package com.rmiragaya.deptnasachallenge.ui.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -16,6 +15,7 @@ import com.rmiragaya.deptnasachallenge.R
 import com.rmiragaya.deptnasachallenge.databinding.FullImageFragmentBinding
 import com.rmiragaya.deptnasachallenge.models.DatePhotosItem
 import com.rmiragaya.deptnasachallenge.ui.activity.MainActivity
+import com.rmiragaya.deptnasachallenge.utils.Constants.Companion.IMAGE_URL
 
 
 class FullImageFragment : Fragment() {
@@ -37,6 +37,11 @@ class FullImageFragment : Fragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        bindViews()
+    }
+
     private fun setToolbar() {
         with(requireActivity() as MainActivity){
             this.setSupportActionBar(this.binding.toolbar)
@@ -52,34 +57,24 @@ class FullImageFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.showinfo -> {
-                sgowDialogWithInfo()
-                Log.d("MENU", "Will post the photo to server")
+                showDialogWithInfo()
                 true
-            }
-            else -> true
+            } else -> true
         }
     }
 
-    private fun sgowDialogWithInfo() {
+    private fun showDialogWithInfo() {
         MaterialAlertDialogBuilder(requireActivity(),
         com.google.android.material.R.style.ThemeOverlay_MaterialComponents_MaterialAlertDialog)
             .setMessage(photoItem.toString())
             .show()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        bindViews()
-    }
-
     private fun bindViews() {
         photoItem = args.photoItem
-        val dateFormat = photoItem?.date?.replace("-", "/")
-
         photoItem.let {
             Glide.with(this)
-                .load("https://epic.gsfc.nasa.gov/archive/enhanced/${dateFormat?.split(" ")?.first()}/png/${photoItem?.image}.png")
-//                .transform(CenterCrop(), RoundedCorners(25))
+                .load("$IMAGE_URL${it?.getOnlyDate()}/png/${photoItem?.image}.png")
                 .placeholder(R.drawable.ic_placeholder)
                 .into(binding.photo)
         }

@@ -106,6 +106,7 @@ class DatesListAdapter(val onClick: (PhotoList) -> Unit) :
         }
     }
 
+    /** get the next index to make the call */
     fun getNextDate(date: String): Int? {
        val currentIndex =  data.withIndex().find { it.value.date == date }?.index
         currentIndex?.let {

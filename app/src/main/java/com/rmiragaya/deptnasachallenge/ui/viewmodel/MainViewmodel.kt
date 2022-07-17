@@ -1,6 +1,5 @@
 package com.rmiragaya.deptnasachallenge.ui.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -16,18 +15,18 @@ import kotlinx.coroutines.launch
 import retrofit2.Response
 
 class MainViewmodel(
-    val repo: NasaRepo
+    private val repo: NasaRepo
 ) : ViewModel() {
 
     private val _dateListResponse = MutableLiveData<Resource<MutableList<DateResponseItem>>>()
     val dateListResponse: LiveData<Resource<MutableList<DateResponseItem>>>
         get() = _dateListResponse
 
-    private val getListExceptionHandler = CoroutineExceptionHandler { r, w ->
+    private val getListExceptionHandler = CoroutineExceptionHandler { _, w ->
         _dateListResponse.postValue(Resource.Error(w.message))
     }
 
-    private val getPhotosExceptionHandler = CoroutineExceptionHandler { r, w ->
+    private val getPhotosExceptionHandler = CoroutineExceptionHandler { _, w ->
         _dateLoading.postValue( dateLoading.value.apply { this?.downloadState = DownloadState.ERROR }
         )
     }
@@ -41,7 +40,6 @@ class MainViewmodel(
     }
 
     private fun getDateList() = viewModelScope.launch(Dispatchers.IO + getListExceptionHandler) {
-
         _dateListResponse.postValue(Resource.Loading())
         val response = repo.getDateList()
         _dateListResponse.postValue(handleListReponse(response))

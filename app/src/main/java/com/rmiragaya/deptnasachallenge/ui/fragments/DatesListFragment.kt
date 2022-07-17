@@ -36,14 +36,12 @@ class DatesListFragment : Fragment() {
         return binding.root
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         listViewmodel = (activity as MainActivity).viewmodel
 
         setUpObserver()
-
         setUpRecyclerView()
     }
 
@@ -69,9 +67,9 @@ class DatesListFragment : Fragment() {
 
         listViewmodel.dateLoading.observe(viewLifecycleOwner) {
             it?.date?.let { date ->
-                Log.d("SEARCH", "search date ${date} result ${it.downloadState?.name}")
                 updateDateList(it)
                 if (it.downloadState == DownloadState.SUCCES) {
+                    /** make the next call */
                     getDatesPhotos(datesListAdapter.getNextDate(date))
                 }
             }
@@ -80,7 +78,6 @@ class DatesListFragment : Fragment() {
 
     private fun getDatesPhotos(indexDate: Int?) {
         indexDate?.let {
-            Log.d("SEARCH", "go get index $indexDate")
             val fullList = listViewmodel.dateListResponse.value?.data
             val dateToSearch = fullList?.get(it)
             if (dateToSearch?.downloadState == DownloadState.IDLE || dateToSearch?.downloadState == null) {
@@ -136,6 +133,7 @@ class DatesListFragment : Fragment() {
         )
     }
 
+    /** update the list and send it to the adapter tu update it*/
     private fun updateDateList(dateLoading: DateResponseItem) {
         val listaCompleta = listViewmodel.dateListResponse.value?.data
         listaCompleta?.let {

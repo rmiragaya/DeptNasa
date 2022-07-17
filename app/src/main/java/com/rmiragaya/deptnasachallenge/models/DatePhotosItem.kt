@@ -11,11 +11,15 @@ data class DatePhotosItem(
     val date: String?,
     val identifier: String?,
     val image: String?
-): Parcelable {
+) : Parcelable {
     override fun toString(): String {
         return "Caption: $caption\n" +
                 "\nDate: $date\n" +
                 "\nIdentifier: $identifier\n" +
                 "\nImage: $image"
+    }
+
+    fun getOnlyDate(): String {
+        return date?.replace("-", "/")?.split(" ")?.first().toString()
     }
 }
