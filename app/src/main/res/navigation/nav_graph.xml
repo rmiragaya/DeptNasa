@@ -18,10 +18,25 @@
     </fragment>
     <fragment
         android:id="@+id/photosFragment"
-        android:name="com.rmiragaya.deptnasachallenge.ui.fragments.PhotosFragment"
+        android:name="com.rmiragaya.deptnasachallenge.ui.fragments.PhotosGridFragment"
         android:label="PhotosFragment">
         <argument
-            android:name="objectKey"
+            android:name="photoList"
             app:argType="com.rmiragaya.deptnasachallenge.models.PhotoList" />
+        <action
+            android:id="@+id/action_photosFragment_to_fullImageFragment"
+            app:destination="@id/fullImageFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+    <fragment
+        android:id="@+id/fullImageFragment"
+        android:name="com.rmiragaya.deptnasachallenge.ui.fragments.FullImageFragment"
+        android:label="FullImageFragment">
+    <argument
+        android:name="photoItem"
+        app:argType="com.rmiragaya.deptnasachallenge.models.DatePhotosItem" />
     </fragment>
 </navigation>

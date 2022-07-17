@@ -5,4 +5,5 @@
     <string name="dept_challenge">Dept Challenge</string>
     <string name="no_conection">No tienes conexión</string>
     <string name="retry">Reintentar</string>
+    <string name="info">Info</string>
 </resources>

@@ -22,7 +22,6 @@ class MainActivity : AppCompatActivity() {
             MainViewmodelFactory(NasaRepo)
         )[MainViewmodel::class.java]
 
-        // todo exact 2 seconds?
         installSplashScreen().apply {
             setKeepVisibleCondition{
                 viewmodel.dateListResponse.value?.data == null

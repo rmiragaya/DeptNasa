@@ -12,7 +12,7 @@ import com.rmiragaya.deptnasachallenge.models.DateResponseItem
 import com.rmiragaya.deptnasachallenge.models.DownloadState
 import com.rmiragaya.deptnasachallenge.models.PhotoList
 
-class DatesListAdapter(val onClick: (PhotoList) -> Unit, val onScreen: (String) -> Unit) :
+class DatesListAdapter(val onClick: (PhotoList) -> Unit) :
     RecyclerView.Adapter<DatesListAdapter.DateViewHolder>() {
 
     private var data = emptyList<DateResponseItem>()
@@ -37,7 +37,6 @@ class DatesListAdapter(val onClick: (PhotoList) -> Unit, val onScreen: (String) 
             dateItem.date.let { binding.date.text = it }
             setDownloadStatus(dateItem.downloadState ?: DownloadState.IDLE, binding)
             setArticle(dateItem.datePhotos)
-            onScreen(dateItem.date)
         }
 
         private fun setDownloadStatus(
@@ -50,28 +49,28 @@ class DatesListAdapter(val onClick: (PhotoList) -> Unit, val onScreen: (String) 
                         idle.visibility = View.VISIBLE
                         downloading.visibility = View.INVISIBLE
                         downloaded.visibility = View.INVISIBLE
-
+                        error.visibility = View.INVISIBLE
                     }
                     DownloadState.LOADING -> {
                         idle.visibility = View.INVISIBLE
                         downloading.visibility = View.VISIBLE
                         downloaded.visibility = View.INVISIBLE
-
+                        error.visibility = View.INVISIBLE
                     }
                     DownloadState.SUCCES -> {
                         idle.visibility = View.INVISIBLE
                         downloading.visibility = View.INVISIBLE
                         downloaded.visibility = View.VISIBLE
+                        error.visibility = View.INVISIBLE
                     }
                     DownloadState.ERROR -> {
-                        idle.visibility = View.VISIBLE
+                        idle.visibility = View.INVISIBLE
                         downloading.visibility = View.INVISIBLE
                         downloaded.visibility = View.INVISIBLE
+                        error.visibility = View.VISIBLE
                     }
                 }
-
             }
-
         }
 
         private fun setArticle(item: ArrayList<DatePhotosItem>?) {
@@ -100,14 +99,17 @@ class DatesListAdapter(val onClick: (PhotoList) -> Unit, val onScreen: (String) 
 
         this.data = newList
         diferencia.dispatchUpdatesTo(this)
-
-        positionChanged?.let { notifyItemChanged(positionChanged) } ?: run { notifyDataSetChanged() }
+        positionChanged?.let {
+            notifyItemChanged(positionChanged)
+        } ?: run {
+            notifyDataSetChanged()
+        }
     }
 
-    fun getNextDate(index: Int): String? {
-        return if (data.size > index ){
-            data[index + 1].date
-        } else null
+    fun getNextDate(date: String): Int? {
+       val currentIndex =  data.withIndex().find { it.value.date == date }?.index
+        currentIndex?.let {
+            return currentIndex + 1
+        } ?: return null
     }
-
 }
